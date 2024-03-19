@@ -20,7 +20,7 @@ This Java console application is developed as a standalone project for a practic
 This project is developed with Java 17, highlighting the application of object-oriented programming principles in Java.
 
 ### Contributors
-This project is a personal endeavor by me as part of my coursework in Java programming at ENI École Informatique.
+This project was developed by me as part of my coursework in Java programming at ENI Informatique.
 
 ---
 
@@ -44,4 +44,4 @@ Cette application console Java est développée comme projet individuel pour un 
 Ce projet est développé avec Java 17, mettant en lumière l'application des principes de la programmation orientée objet en Java.
 
 ### Contributeurs
-Ce projet est une entreprise personnelle de ma part dans le cadre de mon cours de programmation Java à l'ENI École Informatique.
+Ce projet a été développé par moi-même dans le cadre de mon cours de programmation Java à l'ENI Informatique.
