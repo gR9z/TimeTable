@@ -43,7 +43,7 @@ class TimeTable {
 				if (day != null) {
 					sb.append(String.format(" %2d ", day.getDate().getDayOfMonth()));
 				} else {
-					sb.append("    ");
+					sb.append(" ".repeat(4));
 				}
 			}
 
