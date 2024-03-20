@@ -5,16 +5,29 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
-public class TimeTable {
-	static Scanner scanner = new Scanner(System.in);
-	static Month currentMonth = new Month();
-	static boolean running = true;
-	static LocalDateTime launchTime = LocalDateTime.now();
-	static DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
+class TimeTable {
+	private static final String TIME_FORMAT = "HH:mm:ss";
+	private static final String DATE_FORMAT = "yyyy-MM-dd";
 
-	private static void displayMonth(Month currentMonth) {
+	private Scanner scanner;
+	private Month currentMonth;
+	private boolean running;
+	private LocalDateTime dateTime;
+	private DateTimeFormatter timeFormatter;
+
+	public TimeTable() {
+		scanner = new Scanner(System.in);
+		currentMonth = new Month();
+		running = true;
+		dateTime = LocalDateTime.now();
+		timeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT);
+		System.out.println("Program launched at: " + dateTime.format(timeFormatter) + "\n");
+	}
+
+	private void displayMonth() {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("      " + currentMonth.getFormattedDate()).append("\n\n");
@@ -40,60 +53,83 @@ public class TimeTable {
 		System.out.println(sb.toString());
 	}
 
-	public static boolean isValidDate(String dateStr) {
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	private void updateCurrentMonth(int monthOffset) {
+		currentMonth = new Month(currentMonth.getFirstDayOfMonth().plusMonths(monthOffset).toString());
+	}
+
+	private void handlePrev() {
+		updateCurrentMonth(-1);
+	}
+
+	private void handleNext() {
+		updateCurrentMonth(1);
+	}
+
+	private Optional<LocalDate> isValidDate(String dateStr) {
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMAT);
 		try {
-			LocalDate.parse(dateStr, formatter);
-			return true;
+			LocalDate date = LocalDate.parse(dateStr, formatter);
+			return Optional.of(date);
 		} catch (DateTimeParseException e) {
-			return false;
+			return Optional.empty();
 		}
 	}
 
-	public static void handleUserInput() {
+	private void handleSearch() {
+		String userInputDate;
+		Optional<LocalDate> validDate;
+
+		do {
+			System.out.print("Choose a date (format: YYYY-MM-DD): ");
+			userInputDate = scanner.nextLine();
+			validDate = isValidDate(userInputDate);
+			if (validDate.isEmpty()) {
+				System.out.println("Invalid date format. Please use YYYY-MM-DD.\n");
+			}
+		} while (validDate.isEmpty());
+
+		System.out.println("Search performed at: " + dateTime.format(timeFormatter) + "\n");
+		currentMonth = new Month(userInputDate);
+	}
+
+	private void handleQuit() {
+		System.out.println("The program has been stopped.");
+		running = false;
+	}
+
+	private void handleUserInput() {
 		System.out.println("[p]revious, [n]ext, [s]earch, [q]uit");
-		String input = scanner.nextLine();
+		String input = scanner.nextLine().trim().toLowerCase();
 
 		switch (input) {
 		case "p":
-			currentMonth = new Month(currentMonth.getFirstDayOfMonth().minusMonths(1).toString());
+			handlePrev();
 			break;
 		case "n":
-			currentMonth = new Month(currentMonth.getFirstDayOfMonth().plusMonths(1).toString());
+			handleNext();
 			break;
 		case "s":
-			String userInputDate;
-			boolean validDate;
-			
-			do {
-				System.out.print("Choose a date (format: YYYY-MM-DD): ");
-				userInputDate = scanner.nextLine();
-				validDate = isValidDate(userInputDate);
-				if(!validDate) {
-					System.out.println("Invalid date format. Please use YYYY-MM-DD.\n");
-				}
-			} while (!validDate);
-
-			LocalDateTime searchTime = LocalDateTime.now();			
-				System.out.println("Search performed at: " + searchTime.format(timeFormatter) + "\n");
-				currentMonth = new Month(userInputDate);
+			handleSearch();
 			break;
 		case "q":
-			running = false;
+			handleQuit();
 			break;
 		default:
 			System.out.println("Unknown command. Please try again!");
 		}
 	}
 
-	public static void main(String[] args) {
-		System.out.println("Program launched at: " + launchTime.format(timeFormatter) + "\n");
-		
+	private void init() {
 		while (running) {
-			displayMonth(currentMonth);
+			displayMonth();
 			handleUserInput();
 		}
 
 		scanner.close();
+	}
+
+	public static void main(String[] args) {
+		TimeTable timeTable = new TimeTable();
+		timeTable.init();
 	}
 };

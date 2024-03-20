@@ -6,7 +6,7 @@ class Day {
 	private LocalDate date;
 	private String dayOfWeek;
 
-	Day(LocalDate date) {
+	public Day(LocalDate date) {
 		this.date = date;
 		this.dayOfWeek = date.getDayOfWeek().toString();
 	}
